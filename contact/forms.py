@@ -1,18 +1,17 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from . import models
+from django.contrib.auth.models import User
 
 class ContactForm(forms.ModelForm):
-    first_name = forms.CharField(
-        widget=forms.TimeInput(
+    picture = forms.ImageField(
+        widget=forms.FileInput(
             attrs={
-                'placeholder': 'Escreva oba',
+                'accept': 'image/*',
             }
-        ),
-        label='Primeiro Nome',
-        help_text='Texto de ajuda'
+        )
     )
-    
 
     class Meta:
         model = models.Contact
@@ -21,14 +20,6 @@ class ContactForm(forms.ModelForm):
             'email', 'description', 'category',
             'picture',
         )
-        # widgets = {
-        #     'first_name': forms.TextInput(
-        #         attrs={
-        #             'class': 'classe-a classe-b',
-        #             'placeholder': 'Escreva aqui',
-        #         }
-        #     )
-        # }
 
 
     def clean(self):
@@ -59,3 +50,37 @@ class ContactForm(forms.ModelForm):
             )
 
         return first_name
+
+
+
+class RegisterForm(UserCreationForm):
+    first_name = forms.CharField(
+        required=True,
+        min_length=3,
+    )
+    last_name = forms.CharField(
+        required=True,
+        min_length=3,
+    )
+    email = forms.EmailField(
+        required=True,
+        min_length=3,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            'first_name', 'last_name', 'email',
+            'username', 'password1', 'password2',
+        )
+
+        def clean_email(self):
+            email = self.cleaned_data.get('email')
+
+            if User.objects.filter(email=email).exists():
+                self.add_error(
+                    'email',
+                    ValidationError('Esse email ja esta cadastrado na base', code='invalid')
+                )
+
+            return email

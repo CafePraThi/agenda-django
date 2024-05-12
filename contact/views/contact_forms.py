@@ -6,11 +6,11 @@ from contact.forms import ContactForm
 
 
 
-def create(requests):
+def create(request):
   form_action = reverse('contact:create')
 
-  if requests.method == 'POST':
-    form = ContactForm(requests.POST)
+  if request.method == 'POST':
+    form = ContactForm(request.POST, request.FILES)
 
     context = {
       'form': form,
@@ -22,7 +22,7 @@ def create(requests):
       return redirect('contact:update', contact_id=contact.pk)
 
     return render(
-      requests,
+      request,
       'contact/create.html',
       context
     )
@@ -33,18 +33,18 @@ def create(requests):
   }
 
   return render(
-    requests,
+    request,
     'contact/create.html',
     context
   )
 
 
-def update(requests, contact_id):
+def update(request, contact_id):
   contact = get_object_or_404(Contact, pk=contact_id, show=True)
   form_action = reverse('contact:update', args=(contact_id,))
 
-  if requests.method == 'POST':
-    form = ContactForm(requests.POST, instance=contact)
+  if request.method == 'POST':
+    form = ContactForm(request.POST, request.FILES, instance=contact)
 
     context = {
       'form': form,
@@ -56,7 +56,7 @@ def update(requests, contact_id):
       return redirect('contact:update', contact_id=contact.pk)
 
     return render(
-      requests,
+      request,
       'contact/create.html',
       context
     )
@@ -67,23 +67,23 @@ def update(requests, contact_id):
   }
 
   return render(
-    requests,
+    request,
     'contact/create.html',
     context
   )
 
 
-def delete(requests, contact_id):
+def delete(request, contact_id):
   contact = get_object_or_404(Contact, pk=contact_id, show=True)
 
-  confirmation = requests.POST.get('confirmation', 'no')
+  confirmation = request.POST.get('confirmation', 'no')
   print(confirmation)
 
   if confirmation == 'yes':
     contact.delete()
     return redirect('contact:index')
 
-  return render(requests, 'contact/contact.html',
+  return render(request, 'contact/contact.html',
                 {
                   'contact': contact,
                   'confirmation': confirmation,
