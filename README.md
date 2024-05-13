@@ -9,7 +9,7 @@ This is a Django-based agenda project aimed at managing contacts. The project in
 1. Clone the repository to your local machine:
 
 ```
-git clone <repository_url>
+git clone https://github.com/CafePraThi/agenda-django.git
 ```
 
 2. Navigate to the project directory:
